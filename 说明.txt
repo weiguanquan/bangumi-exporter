@@ -1,0 +1,153 @@
+Bangumi 收藏导出工具 v3.2
+=============================
+
+【本项目全部由 AI 生成】
+  代码、文档、测试、功能与架构设计，全部由 AI 编写，没有一行是人类手写的。
+  人类只负责提需求、选功能范围、提供自己的 Bangumi 账号用于验证。
+  详见 README.md 顶部的「关于本项目的来源」一节。
+  —— 请当作 AI 生成物看待，重要数据上使用前建议自行复核。
+
+使用方法：
+  双击「启动.bat」即可，浏览器会自动打开。
+  在页面里粘贴 Token 后点击「开始导出」。
+
+v3.2 新增（大数据分析 / 报告 / 自动化）：
+  ● 可视化 HTML 报告：单文件、内联 SVG 图表，断网也能打开、可直接发给别人
+  ● 数据补全：简介 / 制作公司 / staff / 声优 / 分集列表 + 播出星期 / 卷数
+             （每部 4 个接口，首次较慢，之后走缓存只抓缺失的）
+  ● 各类型专门统计：书籍看卷数、游戏看平台、音乐看曲目数、动画看话数与播出星期
+  ● 用户画像：TF-IDF 兴趣标签、香农熵 / 归一化熵 / 等效标签数 / 基尼系数，
+             自动生成「口味核心 / 多样性 / 年代 / 篇幅 / 口碑」人话洞察
+  ● 个人评分模型：有 8 条以上评分时，岭回归拟合你「会给什么作品打高分」
+  ● 智能推荐：热度检索 + 口碑阈值（评分≥6.5 且 ≥200 人打分）+ 画像相似度排序
+  ● 全站对比：我的口味 vs 大众（基于 1~10 分打分人数直方图，离线可用）
+  ● 数据体检：逐列解释「为什么这列是空的」，区分「你自己没填」和「接口没有」
+  ● 收藏历史归档 + 任意两次快照对比（新增 / 删除 / 修改了什么一目了然）
+  ● 定时导出 + 变更提醒（有变化才写 输出\提醒.log）
+  ● 多账号管理（Token 混淆存储）+ 配置与缓存的一键备份 / 恢复
+
+功能：
+  导出收藏记录（5 个数据源自动择优，含 Kazumi 同款鉴权镜像 api.bgmapi.com）
+  多格式导出（CSV / JSON / Excel / Markdown / HTML）
+  多类型支持（动画 / 书籍 / 音乐 / 游戏 / 三次元）
+  按收藏状态过滤（想看 / 看过 / 在看 / 搁置 / 抛弃）
+  增量导出（只导出新增与变化的条目，无变化则不生成文件）
+  离线导出（断网也能用本地缓存重新生成文件）
+  时间过滤（只导出最近 7 天 / 指定日期之后有更新的条目）
+  仪表盘（收藏分布、评分分布、放送年份、标签、平台、
+            我的评分 vs BGM 评分、追番完成度、Top 10 榜单）
+  画像页（用户画像 / 猜你喜欢 / 全站对比 / 数据体检）
+  数据表（23 列：封面、评分人数、卷数、放送星期、平台、制作公司、条目标签、简介、
+            更新时间、搜索、排序、跳转 bgm.tv、复制 CSV）
+  导出结果自检（校验文件真的可解析、条数一致）
+  数据源管理页（查看每个源的延迟与可用性、一键重新探测）
+  实时日志显示 / 任务取消 / 缓存管理 / 浏览器内下载
+
+数据源（导出前自动探测，只挑最快的可用源）：
+  https://api.bgmapi.com     BGMAPI 镜像（推荐，支持 Token 鉴权）
+  https://bgmapi.anibt.net   Anibt 镜像（不支持 Token 鉴权）
+  https://api.bgm.tv         官方 API
+  https://next.bgm.tv        官方 Next API
+  https://api.bgm.icu        BGM.ICU 镜像
+  连续失败 3 次的源会被临时熔断，不再拖慢导出。
+
+文件说明：
+  启动.bat                    启动器（双击我）
+  config.json                 Token 与导出设置
+  accounts.json               多账号（Token 经混淆存储，非明文）
+  src/webui.py                Web 服务入口（兼容启动.bat）
+  src/icon.ico                应用图标
+  src/bangumi_exporter/       主程序包
+    constants.py              常量（类型 / 格式 / 数据源 / 字段）
+    config.py                 配置与 Token 解析
+    api.py                    HTTP 客户端（重试 / 代理 / 多源故障转移）
+    sources.py                数据源探测、排序、熔断与状态持久化
+    cache.py                  评分缓存 + 完整数据缓存
+    exporters.py              五种导出格式
+    stats.py                  统计报告与图表数据
+    diagnose.py               数据体检（解释每列为什么有值/没值）
+    profile.py                用户画像、评分模型、智能推荐
+    compare.py                全站对比（我的评分 vs 大众分布）
+    history.py                快照归档与收藏变化对比
+    schedule.py               定时导出与变更提醒
+    accounts.py               多账号与备份 / 恢复
+    report.py                 单文件可视化 HTML 报告
+    details.py                数据补全（简介 / staff / 声优 / 分集 / 播出星期 / 卷数）
+    engine.py                 导出编排与进度上报
+    server.py                 Web 服务与任务状态
+    ui.py                     SPA 前端页面
+    cli.py                    统一命令行入口
+    gui.py                    原生 tkinter 界面（备用）
+  tools/tee_run.py            启动包装：把输出同时写入控制台与日志
+  tools/make_icon.py          生成 src/icon.ico
+  tools/bootstrap_pyinstaller.py  手动下载 PyInstaller（打包用）
+  输出/                       导出结果
+    bangumi_export.*          导出文件
+    bangumi_export_stats.md   统计报告（含画像 / 全站对比 / 体检 / 类型统计）
+    bangumi_export_报告.html   可视化报告（单文件，内联 SVG）
+    bangumi_export_详情.md     简介 / staff / 声优 / 分集（完整）
+    bangumi_export_详情.json   同上，结构化
+    历史归档/                 每次归档的快照（供对比变化）
+    提醒.log                  定时导出的变更提醒
+    .detail_cache.json        详情补全缓存（只抓缺失的条目）
+    .rating_cache.json        评分 / 平台 / 打分直方图缓存
+    .data_cache.json          完整数据缓存（增量 / 离线导出用）
+    .sources.json             数据源健康记录
+    launch.log                启动日志
+
+命令行用法：
+  不带任何参数运行            = 启动 Web 界面（和 --serve 一样）
+  python -m bangumi_exporter.cli --serve              启动 Web 界面
+  python -m bangumi_exporter.cli --gui                启动原生界面
+  python -m bangumi_exporter.cli --type anime -f csv  导出动画到 CSV
+  python -m bangumi_exporter.cli --type all -f all    导出全部类型与格式
+  python -m bangumi_exporter.cli --list-sources       探测并列出所有数据源
+  python -m bangumi_exporter.cli --source URL         手动指定数据源
+  python -m bangumi_exporter.cli --incremental        只导出有变化的条目
+  python -m bangumi_exporter.cli --offline            离线重新生成文件
+  python -m bangumi_exporter.cli --since 7d           只导出最近 7 天的更新
+  python -m bangumi_exporter.cli --no-details         跳过详情补取（更快）
+
+  ── v3.2 新命令 ──
+  python -m bangumi_exporter.cli -f all --recommend --report --archive --supplement
+                                                      全套：推荐+报告+归档+数据补全
+  python -m bangumi_exporter.cli --supplement          只做数据补全（简介/staff/声优/分集）
+  python -m bangumi_exporter.cli --supplement-limit 5  只补前 5 条（先试速度）
+  python -m bangumi_exporter.cli --no-profile         不生成画像（默认生成）
+  python -m bangumi_exporter.cli --recommend --recommend-limit 30
+                                                      生成 30 条推荐
+  python -m bangumi_exporter.cli --history            列出快照并对比最近两份
+  python -m bangumi_exporter.cli --compare 旧ID 新ID   对比指定的两份快照
+  python -m bangumi_exporter.cli --watch 30m          定时导出（30m/6h/1d）
+  python -m bangumi_exporter.cli --token TOKEN --account 主号
+                                                      保存账号
+  python -m bangumi_exporter.cli --use-account 主号    切换账号
+  python -m bangumi_exporter.cli --accounts           列出所有账号
+  python -m bangumi_exporter.cli --del-account 主号    删除账号
+  python -m bangumi_exporter.cli --backup D:\备份      备份配置与缓存
+  python -m bangumi_exporter.cli --restore 备份.zip    从备份恢复
+  python -m bangumi_exporter.cli --help               查看全部参数
+
+  注意：必须带上至少一个导出参数（如 --type / -f / -o / --incremental）
+  才会执行导出；否则程序会认为你想打开 Web 界面。
+
+Token 获取：
+  登录 bgm.tv → 设置 → App 授权 → 创建应用 → 复制 Access Token
+
+常见问题：
+  提示「Token 无效或已过期」：只有所有数据源都返回 401 才会这样提示，
+    此时确实需要重新生成 Token。
+  提示「无法连接任何 Bangumi 数据源」：先在「设置 → 数据源」点「重新探测」，
+    若全部不可用，请在「设置」里填写 HTTP 代理（例如 http://127.0.0.1:7890）。
+  「平台」列是空的：需要开启「补全平台等详情」（默认开启）。
+  「我的评分 / 我的短评 / 我的标签」是空的：这几列是「你自己在 Bangumi 上填的」，
+    站外接口不会替你编造。导出时的「数据体检」会明确标出这几列属于「用户自有」。
+  「看到第几集」全是 0：同上，属于你自己记录的观看进度。
+  「条目标签」为空：升级到 v3.2 后联网导出一次即可（旧缓存没有这一列），
+    之后离线导出也能正常显示。
+  「卷数」为空：卷数是书籍/漫画才有的字段，动画没有卷数，属正常。
+  「制作公司 / 放送星期 / 简介」为空：需要在「导出」页勾选「数据补全」
+    （或命令行加 --supplement）。放送星期只有仍在播 / 有排期的条目才有。
+  增量导出说「没有任何变化，未生成文件」：这是正常的，说明收藏没有变化。
+  定时导出没反应：--watch 模式下每轮都会导出，只有检测到变化才写提醒。
+  启动失败：查看 输出\launch.log。

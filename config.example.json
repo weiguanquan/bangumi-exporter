@@ -1,0 +1,29 @@
+{
+  "_说明": "这是配置模板。复制成 config.json 后填入自己的值；config.json 里含 Token，已被 .gitignore 排除，不要提交。",
+  "token": "",
+  "proxy": "",
+  "subject_types": [
+    2
+  ],
+  "formats": [
+    "csv",
+    "excel",
+    "json",
+    "markdown",
+    "html"
+  ],
+  "output": "",
+  "source": "",
+  "username": "",
+  "enrich_details": true,
+  "api_base": "",
+  "workers": 16,
+  "collection_types": [],
+  "profile": true,
+  "recommend": true,
+  "recommend_limit": 20,
+  "report": true,
+  "archive": true,
+  "supplement": true,
+  "supplement_limit": 0
+}
