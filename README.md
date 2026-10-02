@@ -1,5 +1,10 @@
 # 📺 Bangumi 收藏导出工具 v3.2
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![AI Generated](https://img.shields.io/badge/100%25-AI%20Generated-blueviolet)](#-关于本项目的来源全部内容由-ai-生成)
+[![Python](https://img.shields.io/badge/Python-3.8%2B%20stdlib%20only-3776AB.svg)](https://www.python.org/)
+[![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](#)
+
 一个现代化重排版的 **Bangumi (bgm.tv) 收藏导出与数据看板工具**。
 
 零第三方依赖、单文件双击启动、纯标准库实现。
@@ -661,7 +666,10 @@ CSV 以 UTF-8 BOM 写出，Excel 可直接识别；若仍乱码请改用 Excel(.
 
 ## 📜 许可证
 
-MIT License
+[MIT License](LICENSE) © 2026 weiguanquan
+
+你可以自由使用、修改、分发、商用本项目，只需保留版权声明与许可证原文。
+软件按「原样」提供，不附带任何担保。
 
 ---
 
